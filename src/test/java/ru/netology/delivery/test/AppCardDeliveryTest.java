@@ -1,11 +1,15 @@
+package ru.netology.delivery.test;
+
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.github.javafaker.Faker;
+import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
+import ru.netology.delivery.data.TestDataGenerator;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -15,16 +19,18 @@ import java.util.Locale;
 import static com.codeborne.selenide.Selenide.*;
 
 public class AppCardDeliveryTest {
-    private Faker faker;
-
     @Test
     public void shouldCreateOrder() {
-        $("[data-test-id='city'] input").setValue("Уфа");
+
+        val dataGenerator = new TestDataGenerator();
+        val userInfo = dataGenerator.userProfileDataDto();
+
+        $("[data-test-id='city'] input").setValue(userInfo.getCity());
 
         String dateForInput = fillDateField(5);
 
-        $("[data-test-id='name'] input").setValue(faker.name().fullName());
-        $("[data-test-id='phone'] input").setValue(faker.phoneNumber().phoneNumber());
+        $("[data-test-id='name'] input").setValue(userInfo.getName());
+        $("[data-test-id='phone'] input").setValue(userInfo.getPhone());
         $("[data-test-id='agreement'] .checkbox__box").click();
         clickToButton("Запланировать");
 
@@ -37,7 +43,6 @@ public class AppCardDeliveryTest {
                 .shouldHave(Condition.text("Необходимо подтверждение\nУ вас уже запланирована встреча на другую дату. Перепланировать?\n\n\nПерепланировать"));
 
         clickToButton("Перепланировать");
-
         checkDateNotification(dateForInput);
     }
 
@@ -72,7 +77,6 @@ public class AppCardDeliveryTest {
 
     @BeforeEach
     public void openBrowser() {
-        faker = new Faker(new Locale("ru"));
         open("http://localhost:9999");
     }
 }
