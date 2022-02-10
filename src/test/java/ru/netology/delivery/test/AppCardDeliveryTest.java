@@ -1,20 +1,14 @@
 package ru.netology.delivery.test;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import com.github.javafaker.Faker;
 import lombok.val;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 import ru.netology.delivery.data.TestDataGenerator;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.*;
 
@@ -22,8 +16,7 @@ public class AppCardDeliveryTest {
     @Test
     public void shouldCreateOrder() {
 
-        val dataGenerator = new TestDataGenerator();
-        val userInfo = dataGenerator.userProfileDataDto();
+        val userInfo = TestDataGenerator.userProfileDataDto();
 
         $("[data-test-id='city'] input").setValue(userInfo.getCity());
 
@@ -58,16 +51,8 @@ public class AppCardDeliveryTest {
                 .shouldHave(Condition.text("Успешно!\nВстреча успешно запланирована на " + dateText));
     }
 
-    private String getDateForInput(int days) {
-        Date dateNow = new Date();
-        Date futureDate = DateUtils.addDays(dateNow, days);
-        SimpleDateFormat formatForDateNow = new SimpleDateFormat("dd.MM.yyyy");
-        String dateForInput = formatForDateNow.format(futureDate);
-        return dateForInput;
-    }
-
     private String fillDateField(int days) {
-        String dateForInput = getDateForInput(days);
+        String dateForInput = TestDataGenerator.getDateForInput(days);
         SelenideElement dateField = $("[data-test-id='date'] input");
         dateField.sendKeys(Keys.CONTROL + "a");
         dateField.sendKeys(Keys.DELETE);
